@@ -1,12 +1,13 @@
 import pytest
 from junitparser import TestCase, TestSuite, Error
 
-from slowtestreporter import slowtestreporter
-from slowtestreporter.slowtestreporter import report_slow_tests
 
 # Prevent pytest from trying to collect junitparser test objects as tests:
 TestCase.__test__ = False
 TestSuite.__test__ = False
+
+from slowtestreporter import slowtestreporter
+from slowtestreporter.slowtestreporter import report_slow_tests
 
 
 def test_should_throw_exception_when_file_is_not_found():
