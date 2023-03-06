@@ -3,7 +3,7 @@ import logging
 from junitparser import JUnitXml, Failure
 from tabulate import tabulate
 
-THRESHOLD = 0.02
+THRESHOLD = 0.05
 SLOW_ERROR_MSG = 'Test duration exceeded threshold'
 FAIL_TEXT = 'FAIL'
 

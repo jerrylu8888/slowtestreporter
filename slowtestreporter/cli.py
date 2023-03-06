@@ -3,9 +3,9 @@ import argparse
 import logging
 import sys
 
-from slowtestreporter.slowtestreporter import report_slow_tests
+from slowtestreporter.slowtestreporter import report_slow_tests, THRESHOLD
 
-DEFAULT_THRESHOLD = 0.5
+DEFAULT_THRESHOLD = THRESHOLD
 
 
 def main():
