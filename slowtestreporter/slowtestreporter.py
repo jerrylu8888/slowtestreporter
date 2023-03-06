@@ -40,19 +40,20 @@ def parse_test_results(junit_xml: JUnitXml):
     OTHERWISE => PASS
     """
 
-    for testcase in junit_xml:
-        if testcase.time > THRESHOLD:
-            result = FAIL_TEXT
-            if testcase.result and testcase.result[0]:
-                testcase.result[0].message += ' ' + SLOW_ERROR_MSG
+    for suite in junit_xml:
+        for testcase in suite:
+            if testcase.time > THRESHOLD:
+                result = FAIL_TEXT
+                if testcase.result and testcase.result[0]:
+                    testcase.result[0].message += ' ' + SLOW_ERROR_MSG
+                else:
+                    testcase.result = [Failure(SLOW_ERROR_MSG)]
+                test_results.append([testcase.name, testcase.time, result, testcase.result[0].message])
+            elif testcase.result and testcase.result[0]:
+                result = FAIL_TEXT
+                test_results.append([testcase.name, testcase.time, result, testcase.result[0].message])
             else:
-                testcase.result = [Failure(SLOW_ERROR_MSG)]
-            test_results.append([testcase.name, testcase.time, result, testcase.result[0].message])
-        elif testcase.result and testcase.result[0]:
-            result = FAIL_TEXT
-            test_results.append([testcase.name, testcase.time, result, testcase.result[0].message])
-        else:
-            result = 'PASS'
-            test_results.append([testcase.name, testcase.time, result])
+                result = 'PASS'
+                test_results.append([testcase.name, testcase.time, result])
 
     return test_results, junit_xml
