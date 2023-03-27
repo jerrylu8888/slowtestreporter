@@ -69,3 +69,41 @@ def test_should_report_slow_test_when_single_failed_test_is_slow():
 
     test_results, junit_xml = slowtestreporter.parse_test_results(xml)
     assert slowtestreporter.FAIL_TEXT in test_results[0][2], 'Expected slow test error for failed and slow test'
+
+
+def test_should_not_fail_average_calculation_when_no_test_suite():
+    xml = JUnitXml()
+
+    average_time = slowtestreporter.calculate_average_test_duration(xml)
+    assert average_time == 0, 'Expected no failure when there is no test suite'
+
+
+def test_should_calculate_average_time_for_single_test():
+    case1 = TestCase('case1', 'Test', 0.01)
+    case1.result = []
+    suite = TestSuite('suite1')
+    suite.add_testcase(case1)
+
+    xml = JUnitXml()
+    xml.add_testsuite(suite)
+
+    average_time = slowtestreporter.calculate_average_test_duration(xml)
+    assert average_time == 0.01, 'Expected correct average test duration when calculated against single test case'
+
+
+def test_should_calculate_average_time_for_two_test_cases():
+    case1 = TestCase('case1', 'Test', 0.01)
+    case1.result = []
+
+    case2 = TestCase('case2', 'Test', 0.12)
+    case2.result = []
+
+    suite = TestSuite('suite1')
+    suite.add_testcase(case1)
+    suite.add_testcase(case2)
+
+    xml = JUnitXml()
+    xml.add_testsuite(suite)
+
+    average_time = slowtestreporter.calculate_average_test_duration(xml)
+    assert average_time == 0.065, 'Expected correct average test duration when calculated against 2 test cases'
