@@ -21,12 +21,14 @@ def report_slow_tests(junit_file_path: str, xml_output_file_name: str, display_r
     junit_xml = JUnitXml.fromfile(junit_file_path)
 
     test_results, xml_output = parse_test_results(junit_xml)
+    average_test_duration = calculate_average_test_duration(junit_xml)
 
     if display_results:
         print(tabulate(test_results, headers=["Test", "Time (s)", "Result", "Message"]))
+        logging.info('Average test duration: %s s', average_test_duration)
 
     if xml_output_file_name:
-        xml_output.write(xml_output_file_name+'.xml')
+        xml_output.write(xml_output_file_name + '.xml')
         logging.info('junit file created: %s.xml', xml_output_file_name)
 
 
@@ -57,3 +59,19 @@ def parse_test_results(junit_xml: JUnitXml):
                 test_results.append([testcase.name, testcase.time, result])
 
     return test_results, junit_xml
+
+
+def calculate_average_test_duration(junit_xml: JUnitXml) -> float:
+    test_count: float = 0
+    total_duration: float = 0
+    for suite in junit_xml:
+        for testcase in suite:
+            test_count += 1
+            total_duration += testcase.time
+
+    if test_count == 0:
+        average = 0
+    else:
+        average = total_duration / test_count
+
+    return average

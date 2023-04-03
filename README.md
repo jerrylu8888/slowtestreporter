@@ -1,6 +1,5 @@
 # Slow Test Reporter
-
-Slow Test Reporter reads JUnit test files and reports any slow running tests.
+Slow Test Reporter reads JUnit test result files and reports any slow running tests.
 
 ## Installation
 `pip install slowtestreporter`
