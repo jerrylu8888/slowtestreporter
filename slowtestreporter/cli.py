@@ -8,7 +8,7 @@ from slowtestreporter.slowtestreporter import report_slow_tests, THRESHOLD
 DEFAULT_THRESHOLD = THRESHOLD
 
 
-def main():
+def main(args):
     parser = argparse.ArgumentParser(description='Reports slow tests based on the junit test input.')
     parser.add_argument('-t', '--threshold', type=float, help='A float value threshold (in seconds) of when a '
                                                               'test should fail when it exceeds this value',
@@ -17,7 +17,7 @@ def main():
     parser.add_argument('-o', '--output-filename', help='Filename of the generated junit results without any '
                                                         'extensions. The file will be generated with a .xml extension.')
     parser.add_argument('-s', '--silent', help='Suppresses output to display', action='store_true')
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
     if args.silent:
         logging.basicConfig(level=logging.ERROR)
@@ -37,15 +37,17 @@ def main():
         report_slow_tests(args.path, args.output_filename, not args.silent)
     except FileNotFoundError:
         logging.error('Junit file input not found.')
+        raise SystemExit(1)
 
 
 class ThresholdArgValidationAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         if values <= 0:
-            raise ValueError("Threshold cannot be less than or equal to zero.")
+            logging.error("Threshold cannot be less than or equal to zero.")
+            raise SystemExit(1)
         setattr(namespace, self.dest, values)
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
     sys.exit()
