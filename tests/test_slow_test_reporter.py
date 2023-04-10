@@ -80,7 +80,7 @@ def test_should_report_overall_passed_false_when_single_test_is_slow():
     xml.add_testsuite(suite)
 
     test_results, junit_xml, passed = slowtestreporter.parse_test_results(xml)
-    assert passed == False, 'Expected overall result to fail due to slow test'
+    assert not passed, 'Expected overall result to fail due to slow test'
 
 
 def test_should_report_slow_test_when_single_failed_test_is_slow():
