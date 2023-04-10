@@ -132,3 +132,61 @@ def test_should_calculate_average_time_for_two_test_cases():
 
     average_time = slowtestreporter.calculate_average_test_duration(xml)
     assert average_time == 0.065, 'Expected correct average test duration when calculated against 2 test cases'
+
+
+def test_average_test_result_true_when_no_test_provided():
+    suite = TestSuite('suite1')
+
+    xml = JUnitXml()
+    xml.add_testsuite(suite)
+
+    passed, average_time = slowtestreporter.report_average_test_result(0.5, xml, False)
+    assert passed, 'Expected average test check not to fail when there are no tests'
+
+
+def test_average_test_result_true_when_single_test_average_time_less_than_threshold():
+    case1 = TestCase('case1', 'Test', 0.01)
+    case1.result = []
+    suite = TestSuite('suite1')
+    suite.add_testcase(case1)
+
+    xml = JUnitXml()
+    xml.add_testsuite(suite)
+
+    passed, average_time = slowtestreporter.report_average_test_result(0.5, xml, False)
+    assert passed, 'Expected average test check to pass as test is within threshold'
+
+
+def test_average_test_result_true_when_test_average_time_less_than_threshold():
+    case1 = TestCase('case1', 'Test', 0.01)
+    case1.result = []
+    case2 = TestCase('case2', 'Test', 0.02)
+    case2.result = []
+    suite = TestSuite('suite1')
+    suite.add_testcase(case1)
+    suite.add_testcase(case2)
+
+    xml = JUnitXml()
+    xml.add_testsuite(suite)
+
+    passed, average_time = slowtestreporter.report_average_test_result(0.5, xml, False)
+    assert passed, 'Expected average test check to pass as test is within threshold'
+
+
+def test_average_test_result_false_when_test_average_time_greater_than_threshold():
+    case1 = TestCase('case1', 'Test', 0.1)
+    case1.result = []
+    case2 = TestCase('case2', 'Test', 0.01)
+    case2.result = []
+    case3 = TestCase('case3', 'Test', 0.9)
+    case3.result = []
+    suite = TestSuite('suite1')
+    suite.add_testcase(case1)
+    suite.add_testcase(case2)
+    suite.add_testcase(case3)
+
+    xml = JUnitXml()
+    xml.add_testsuite(suite)
+
+    passed, average_time = slowtestreporter.report_average_test_result(0.3, xml, False)
+    assert not passed, 'Expected average test check to fail as test exceeds threshold'

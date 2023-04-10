@@ -30,6 +30,23 @@ def report_slow_tests(junit_file_path: str, xml_output_file_name: str, display_r
     if xml_output_file_name:
         xml_output.write(xml_output_file_name + '.xml')
         logging.info('junit file created: %s.xml', xml_output_file_name)
+    return passed
+
+
+def report_average_test_result(average_threshold: float, junit_xml: JUnitXml, display_result: bool) -> (bool, float):
+    average_time = calculate_average_test_duration(junit_xml)
+    if average_threshold < average_time:
+        result = False
+    else:
+        result = True
+    if display_result:
+        if result:
+            logging.info('Tests passed average test duration threshold. Threshold for pass: %s, actual: %s',
+                         str(average_threshold), str(average_time))
+        else:
+            logging.info('Tests failed average test duration threshold. Threshold for pass: %s, actual: %s',
+                         str(average_threshold), str(average_time))
+    return result, average_time
 
 
 def parse_test_results(junit_xml: JUnitXml):
