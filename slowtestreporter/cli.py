@@ -25,7 +25,7 @@ def main(args):
     parser.add_argument('--exit-zero-duration-test', help='Force slow test report to use the exit status code 0 even '
                                                           'if there are test errors', action='store_true')
     parser.add_argument('--exit-zero-average-test', help='Force slow test report to use the exit status code 0 even '
-                                                          'if there are test errors', action='store_true')
+                                                         'if there are test errors', action='store_true')
     args = parser.parse_args(args)
 
     if args.silent:
