@@ -17,6 +17,9 @@ def main(args):
     parser.add_argument('-o', '--output-filename', help='Filename of the generated junit results without any '
                                                         'extensions. The file will be generated with a .xml extension.')
     parser.add_argument('-s', '--silent', help='Suppresses output to display', action='store_true')
+    parser.add_argument('--exit-zero-duration-test', help='Force slow test report to use the exit status code 0 even '
+                                                          'if there are test errors', action='store_true')
+
     args = parser.parse_args(args)
 
     if args.silent:
@@ -34,7 +37,11 @@ def main(args):
         logging.info('Threshold for slow tests: %ss', str(threshold))
 
     try:
-        report_slow_tests(args.path, args.output_filename, not args.silent)
+        passed = report_slow_tests(args.path, args.output_filename, not args.silent)
+        if not passed:
+            logging.error('Tests failed threshold.')
+            if not args.exit_zero_duration_test:
+                raise SystemExit(1)
     except FileNotFoundError:
         logging.error('Junit file input not found.')
         raise SystemExit(1)
