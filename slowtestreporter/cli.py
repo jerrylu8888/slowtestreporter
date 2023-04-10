@@ -19,8 +19,8 @@ def main(args):
                                                                       'average duration check should fail',
                         action=ThresholdArgValidationAction)
     parser.add_argument('path', type=str, help='Junit file path')
-    parser.add_argument('-o', '--output-filename', help='Filename of the generated junit results without any '
-                                                        'extensions. The file will be generated with a .xml extension.')
+    parser.add_argument('-o', '--output-filename', help='Filename of the generated junit results without file '
+                                                        'extension. The file will be generated with a .xml extension.')
     parser.add_argument('-s', '--silent', help='Suppresses output to display', action='store_true')
     parser.add_argument('--exit-zero-duration-test', help='Force slow test report to use the exit status code 0 even '
                                                           'if there are test errors', action='store_true')
