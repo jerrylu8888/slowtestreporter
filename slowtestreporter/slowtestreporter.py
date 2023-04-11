@@ -20,7 +20,7 @@ def report_slow_tests(junit_file_path: str, xml_output_file_name: str, display_r
     """
     junit_xml = JUnitXml.fromfile(junit_file_path)
 
-    test_results, xml_output = parse_test_results(junit_xml)
+    test_results, xml_output, passed = parse_test_results(junit_xml)
     average_test_duration = calculate_average_test_duration(junit_xml)
 
     if display_results:
@@ -30,11 +30,28 @@ def report_slow_tests(junit_file_path: str, xml_output_file_name: str, display_r
     if xml_output_file_name:
         xml_output.write(xml_output_file_name + '.xml')
         logging.info('junit file created: %s.xml', xml_output_file_name)
+    return passed
+
+
+def report_average_test_result(average_threshold: float, junit_xml: JUnitXml, display_result: bool) -> (bool, float):
+    average_time = calculate_average_test_duration(junit_xml)
+    if average_threshold < average_time:
+        result = False
+    else:
+        result = True
+    if display_result:
+        if result:
+            logging.info('Tests passed average test duration threshold. Threshold for pass: %s, actual: %s',
+                         str(average_threshold), str(average_time))
+        else:
+            logging.info('Tests failed average test duration threshold. Threshold for pass: %s, actual: %s',
+                         str(average_threshold), str(average_time))
+    return result, average_time
 
 
 def parse_test_results(junit_xml: JUnitXml):
     test_results = []
-
+    passed = True
     """
     IF TEST FAILED => FAILED
     IF TEST TOO SLOW => FAILED
@@ -51,14 +68,16 @@ def parse_test_results(junit_xml: JUnitXml):
                 else:
                     testcase.result = [Failure(SLOW_ERROR_MSG)]
                 test_results.append([testcase.name, testcase.time, result, testcase.result[0].message])
+                passed = False
             elif testcase.result and testcase.result[0]:
                 result = FAIL_TEXT
                 test_results.append([testcase.name, testcase.time, result, testcase.result[0].message])
+                passed = False
             else:
                 result = 'PASS'
                 test_results.append([testcase.name, testcase.time, result])
 
-    return test_results, junit_xml
+    return test_results, junit_xml, passed
 
 
 def calculate_average_test_duration(junit_xml: JUnitXml) -> float:
